@@ -52,29 +52,48 @@ bảo mật.
 ### 5.1. Xây dựng môi trường thực hành
 
 -   Cài đặt và cấu hình các máy ảo.
+
 ![ip của máy victim](images/5.1.1-ip-victim.png)
+
 Máy của mục tiêu có ip là 192.168.1.126/24.
+
 ![ip của máy attack](images/5.1.2-ip-attack.png)
+
 Máy tấn công có ip là 192.168.1.8/24.
+
 ![cài đặt ubuntu server](images/5.1.3-setup-ubuntuserver.png)
+
 Thiết lập ubuntuserver 24.04.05 LTS :https://ubuntu.com/download/server 
+
 ![cài đặt ubuntu server](images/5.1.4-setup-ubuntuserver.png)
+
 Thiết lập thông tin ubuntu server.
+
 ![cài đặt ubuntu server](images/5.1.5-setup-ubuntuserver.png)
+
 Chọn mở SSH.
+
 ![cài đặt ubuntu server](images/5.1.6-setup-ubuntuserver.png)
+
 Hoàn tất cài đặt.
+
 -   Kiểm tra khả năng giao tiếp giữa các máy ảo.
+
 ![ip của máy attack](images/5.1.2-ip-attack.png)
+
 Máy tấn công có ip là 192.168.1.8/24 ping được vào máy mục tiêu có ip 192.168.1.126.
 
 ### 5.2. Kiểm thử xâm nhập
 
 -   Quét mạng và xác định các cổng đang mở.
+
 ![Quét ip được sử dụng trong mạng Lan](images/5.2.1-acttack.png)
+
 "sudo nmap -sn 192.168.1.0/24" hiển thị toàn bộ các ip được dùng trong mạng LAN->quét đc mạng mục tiêu là 192.168.1.126.
 -   Thu thập thông tin về các dịch vụ đang hoạt động.
+
 ![Quét ip được sử dụng trong mạng Lan](images/5.2.2-attack.png)
+
 "nmap 192.168.1.126 -v -sT -sV -p 21 -O" sau khi chạy được các thông tin.
 
  | |  | |
@@ -84,42 +103,59 @@ Máy tấn công có ip là 192.168.1.8/24 ping được vào máy mục tiêu c
  | Hệ điều hành | Linux 2.6.x( 9<x<33) | 
 
 ![Quét ip được sử dụng trong mạng Lan](images/5.2.3-attack.png)
+
 "nmap 192.168.1.126 -v -sT -sV -p 21 –-script=fpt*" tiếp tục chỉ quét cổng 21 và chạy các script  liên quan đến ftp. 
 -   Phân tích các lỗ hổng bảo mật :Kết quả Nmap cho thấy máy mục tiêu 192.168.1.126 đang chạy dịch vụ FTP trên cổng 21 và cho phép đăng nhập Anonymous mà không cần tài khoản, mật khẩu thông thường. Đặc biệt, dịch vụ sử dụng phiên bản vsFTPd 2.3.4 có lỗ hổng CVE-2011-2523 (Backdoor Command Execution), cho phép kẻ tấn công có khả năng thực thi lệnh từ xa trên máy chủ.
+
 -   Thực hiện khai thác lỗ hổng trong môi trường thử nghiệm.
+
 ![Quét ip được sử dụng trong mạng Lan](images/5.2.4-attack.png)
+
 Thử đăng nhập với Netcat bằng tài khoản Anonumous ->thành công.
+
 ![Quét ip được sử dụng trong mạng Lan](images/5.2.5-attack.png)
+
 Đăng nhập với Netcat bằng tài khoản User ->thành công.
 - Kết luận : có vấn đề với cấu hình của FTP.
 - Xâm nhập.
 ![Quét ip được sử dụng trong mạng Lan](images/5.2.6-attack.png)
+
 Tìm trên trang exploit-db.com,vsftpd :2.3.4 có thể khai thác.
 ![Quét ip được sử dụng trong mạng Lan](images/5.2.7-attack.png)
+
 Tải code python về và chạy.
 - Kết quả.
 ![Quét ip được sử dụng trong mạng Lan](images/5.2.8-attack.png)
+
 Log thành công vào Metasploit 2.
 ![Quét ip được sử dụng trong mạng Lan](images/5.2.9-attack.png)
+
 Thử khởi động lại máy mục tiêu ->thành công.
 ### 5.3. Phát hiện xâm nhập bằng Snort
 
 -   Cài đặt và cấu hình Snort.
 ![cài đặt snort trên ubuntu server](images/5.3.1-snort-ubuntuserver.png)
+
 Chạy lệnh "sudo apt update" -> "sudo apt install snort -y" để cài đặt snort.
 ![cấu hình snort trên ubuntu server](images/5.3.2-snort-ubuntuserver.png)
+
 Vào file cấu hình của snort lệnh "sudo nano /etc/snort/snort.conf" để chuyển HOME_NET thành 192.168.1.0/24.
 ![cấu hình snort trên ubuntu server](images/5.3.3-snort-ubuntuserver.png)
+
 Cập nhật thành công.
 -   Xây dựng các luật phát hiện.
 ![cấu hình snort trên ubuntu server](images/5.3.4-snort-ubuntuserver.png)
+
 "sudo nano /etc/snort/rules/local.rules" để xem cấu hình hiện tại.
 ![cấu hình snort trên ubuntu server](images/5.3.5-snort-ubuntuserver.png)
+
  Luật này yêu cầu Snort giám sát các gói tin ICMP từ mọi địa chỉ IP nguồn đến mạng nội bộ ($HOME_NET); khi phát hiện gói tin phù hợp, Snort sẽ tạo cảnh báo với nội dung Ping !!!.
 -   Phát hiện hoạt động Ping và quét cổng.
 ![cấu hình snort trên ubuntu server](images/5.3.6-snort-ubuntuserver.png)
+
 Chạy snort.
 ![cấu hình snort trên ubuntu server](images/5.3.7-snort-ubuntuserver.png)
+
 Máy tấn công ping đến máy mục tiêu ,Snort trên máy ubuntuserver phát ra cảnh báo.
 -   Một số lệnh cấu hình khác:
 
