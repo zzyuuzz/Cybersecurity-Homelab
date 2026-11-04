@@ -186,6 +186,8 @@ Môi trường được thiết kế để thực hành kiểm thử xâm nhập
 
     ![cấu hình snort trên ubuntu server](images/5.3.8-snort-ubuntuserver.png)
 
+    Snort phát hiện và ghi nhận các hoạt động quét mạng đáng ngờ thông trên máy mục tiêu, đồng thời đưa ra cảnh báo -> quản trị viên có thể sớm nhận diện các nguy cơ bảo mật.
+
 ## 6. Kết quả thực hiện
 
 -   Xây dựng môi trường thực hành an ninh mạng bằng máy ảo.
